@@ -1,0 +1,109 @@
+/* src/components/movies/movies.css */
+
+/* --- Filter & Tags --- */
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-row .general-input {
+  max-width: 120px;
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #555;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #ddd;
+}
+
+.tag-filter {
+  background-color: #262626;
+}
+
+.tag-selected {
+  background-color: #ff5a5f;
+  border-color: #ff5a5f;
+  color: #fff;
+}
+
+/* --- Movie card --- */
+
+.movie-card {
+  list-style: none;
+  background-color: #181818;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.movie-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.movie-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.movie-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.movie-icon {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.movie-icon.active {
+  color: #ff5a5f;
+  opacity: 1;
+}
+
+.movie-synopsis {
+  font-size: 0.85rem;
+  color: #cccccc;
+  margin: 0;
+}
+
+.movie-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.movie-genres li {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: #262626;
+}

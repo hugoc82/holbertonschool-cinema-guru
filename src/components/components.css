@@ -1,0 +1,11 @@
+/* src/components/components.css */
+
+.activity-item {
+  padding: 6px 0;
+  font-size: 0.85rem;
+  color: #cccccc;
+}
+
+.activity-item p {
+  margin: 0;
+}
