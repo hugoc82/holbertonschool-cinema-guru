@@ -1,78 +1,284 @@
-import './dashboard.css'
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-import Filter from '../../components/movies/Filter'
-import MovieCard from '../../components/movies/MovieCard'
-import Button from '../../components/general/Button'
+// export default function HomePage() {
+//   return <h1>Home Page</h1>;
+// }
 
-const HomePage = () => {
-  const [movies, setMovies] = useState([])
-  const [minYear, setMinYear] = useState(1970)
-  const [maxYear, setMaxYear] = useState(2022)
-  const [genres, setGenres] = useState([])
-  const [sort, setSort] = useState('')
-  const [title, setTitle] = useState('')
-  const [page, setPage] = useState(1)
+// // src/routes/dashboard/HomePage.jsx (ou là où est ton composant)
+// import { useState } from "react";
+// import Filter from "../../components/movies/Filter";
+// import MovieCard from "../../components/movies/MovieCard";
 
-  const loadMovies = async (pageToLoad = 1, reset = false) => {
-    try {
-      const accessToken = localStorage.getItem('accessToken')
-      const headers = accessToken
-        ? { Authorization: `Bearer ${accessToken}` }
-        : {}
+// // TEMP : quelques films de test (tu remplaceras plus tard par les vrais depuis l’API)
+// const DUMMY_MOVIES = [
+//   {
+//     imdbId: "tt0000001",
+//     title: "Divine Mercenary",
+//     synopsis: "A dark tale of redemption.",
+//     genres: ["action", "drama"],
+//   },
+//   {
+//     imdbId: "tt0000002",
+//     title: "Equally Friends",
+//     synopsis: "A touching story about friendship.",
+//     genres: ["comedy", "romance"],
+//   },
+// ];
 
-      const params = {
-        minYear,
-        maxYear,
-        sort,
-        title,
-        page: pageToLoad,
-      }
+// export default function HomePage() {
+//   // états demandés par le sujet pour Filter
+//   const [minYear, setMinYear] = useState("");
+//   const [maxYear, setMaxYear] = useState("");
+//   const [sort, setSort] = useState("");
+//   const [genres, setGenres] = useState([]);  // utilisé par Tag / Filter
+//   const [title, setTitle] = useState("");
 
-      if (genres.length > 0) {
-        params.genres = genres.join(',')
-      }
+//   // pour l’instant on affiche des films de test
+//   const [movies] = useState(DUMMY_MOVIES);
 
-      const response = await axios.get(
-        'http://localhost:8000/api/titles/advancedsearch',
-        { params, headers }
-      )
+//   return (
+//     <div className="dashboard-page">
+//       {/* FILTRE (search bar + min/max + sort + tags) */}
+//       <Filter
+//         minYear={minYear}
+//         setMinYear={setMinYear}
+//         maxYear={maxYear}
+//         setMaxYear={setMaxYear}
+//         sort={sort}
+//         setSort={setSort}
+//         genres={genres}
+//         setGenres={setGenres}
+//         title={title}
+//         setTitle={setTitle}
+//       />
 
-      const data = response.data || []
+//       {/* LISTE DE FILMS */}
+//       <ul className="movies-list">
+//         {movies.map((movie) => (
+//           <MovieCard key={movie.imdbId} movie={movie} />
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
 
-      // On essaie de toujours obtenir un tableau de films
-      let newMovies
-      if (Array.isArray(data)) {
-        newMovies = data
-      } else if (Array.isArray(data.results)) {
-        newMovies = data.results
-      } else if (Array.isArray(data.titles)) {
-        newMovies = data.titles
-      } else {
-        newMovies = []
-      }
+// // src/routes/dashboard/HomePage.jsx
+// import { useState, useEffect } from "react";
+// import axios from "axios";
+// import Filter from "../../components/movies/Filter";
+// import MovieCard from "../../components/movies/MovieCard";
 
-      setMovies((prev) => (reset ? newMovies : [...prev, ...newMovies]))
-    } catch (error) {
-      console.error('Failed to load movies:', error)
-    }
-  }
+// export default function HomePage() {
+//   const [minYear, setMinYear] = useState("");
+//   const [maxYear, setMaxYear] = useState("");
+//   const [sort, setSort] = useState("");
+//   const [genres, setGenres] = useState([]);  // vient des <Tag>
+//   const [title, setTitle] = useState("");
+//   const [movies, setMovies] = useState([]);
+//   const [loading, setLoading] = useState(false);
 
-  // Chargement initial + à chaque changement de filtre / tri / recherche
+//   // 🔁 à chaque changement de filtre, on recharge la liste
+//   useEffect(() => {
+//     const controller = new AbortController();
+
+//     const fetchMovies = async () => {
+//       try {
+//         setLoading(true);
+
+//         const token = localStorage.getItem("accessToken");
+
+//         const res = await axios.get(
+//           "http://localhost:8000/api/titles/advancedsearch",
+//           {
+//             signal: controller.signal,
+//             headers: token
+//               ? { Authorization: `Bearer ${token}` }
+//               : undefined,
+//             params: {
+//               title: title || undefined,
+//               minYear: minYear || undefined,
+//               maxYear: maxYear || undefined,
+//               sort: sort || undefined,
+//               // ex: "action,drama,comedy"
+//               genres: genres.length ? genres.join(",") : undefined,
+//             },
+//           }
+//         );
+
+//         console.log("Movies from backend =>", res.data);
+//         setMovies(res.data || []);
+//       } catch (err) {
+//         if (err.name !== "CanceledError") {
+//           console.error("Error fetching movies:", err);
+//         }
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchMovies();
+
+//     return () => controller.abort();
+//   }, [title, minYear, maxYear, sort, genres]);
+
+//   return (
+//     <div className="dashboard-page">
+//       <Filter
+//         minYear={minYear}
+//         setMinYear={setMinYear}
+//         maxYear={maxYear}
+//         setMaxYear={setMaxYear}
+//         sort={sort}
+//         setSort={setSort}
+//         genres={genres}
+//         setGenres={setGenres}
+//         title={title}
+//         setTitle={setTitle}
+//       />
+
+//       {loading && <p style={{ color: "#fff" }}>Loading...</p>}
+
+//       <ul className="movies-list">
+//         {movies.map((movie) => (
+//           <MovieCard key={movie.imdbId} movie={movie} />
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
+
+// // // src/routes/dashboard/HomePage.jsx
+// // import { useState, useEffect } from "react";
+// // import axios from "axios";
+// // import Filter from "../../components/movies/Filter";
+// // import MovieCard from "../../components/movies/MovieCard";
+
+// // const API_BASE = "http://localhost:8000";
+
+// // export default function HomePage() {
+// //   const [minYear, setMinYear] = useState("");
+// //   const [maxYear, setMaxYear] = useState("");
+// //   const [sort, setSort] = useState("");
+// //   const [genres, setGenres] = useState([]);
+// //   const [title, setTitle] = useState("");
+// //   const [movies, setMovies] = useState([]);
+// //   const [loading, setLoading] = useState(false);
+
+// //   // 🔁 recharge les films quand un filtre change
+// //   useEffect(() => {
+// //     const controller = new AbortController();
+
+// //     const fetchMovies = async () => {
+// //       try {
+// //         setLoading(true);
+// //         const token = localStorage.getItem("accessToken");
+
+// //         const res = await axios.get(`${API_BASE}/api/titles/advancedsearch`, {
+// //           signal: controller.signal,
+// //           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+// //           params: {
+// //             title: title || undefined,
+// //             minYear: minYear || undefined,
+// //             maxYear: maxYear || undefined,
+// //             sort: sort || undefined,
+// //             genres: genres.length ? genres.join(",") : undefined,
+// //           },
+// //         });
+
+// //         console.log("Movies from backend =>", res.data);
+// //         setMovies(res.data || []);
+// //       } catch (err) {
+// //         if (err.name !== "CanceledError") {
+// //           console.error("Error fetching movies:", err);
+// //         }
+// //       } finally {
+// //         setLoading(false);
+// //       }
+// //     };
+
+// //     fetchMovies();
+
+// //     return () => controller.abort();
+// //   }, [title, minYear, maxYear, sort, genres]);
+
+// //   return (
+// //     <div className="dashboard-page">
+// //       <Filter
+// //         minYear={minYear}
+// //         setMinYear={setMinYear}
+// //         maxYear={maxYear}
+// //         setMaxYear={setMaxYear}
+// //         sort={sort}
+// //         setSort={setSort}
+// //         genres={genres}
+// //         setGenres={setGenres}
+// //         title={title}
+// //         setTitle={setTitle}
+// //       />
+
+// //       {loading && <p style={{ color: "#fff" }}>Loading...</p>}
+
+// //       <ul className="movies-list">
+// //         {movies.map((movie) => (
+// //           <MovieCard key={movie.imdbId} movie={movie} />
+// //         ))}
+// //       </ul>
+// //     </div>
+// //   );
+// // }
+
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Filter from "../../components/movies/Filter";
+import MovieCard from "../../components/movies/MovieCard";
+
+const API_BASE = "http://localhost:8000";
+
+export default function HomePage() {
+  const [minYear, setMinYear] = useState("");
+  const [maxYear, setMaxYear] = useState("");
+  const [sort, setSort] = useState("");
+  const [genres, setGenres] = useState([]);
+  const [title, setTitle] = useState("");
+  const [movies, setMovies] = useState([]);   // tableau
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    setPage(1)
-    loadMovies(1, true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [minYear, maxYear, genres, sort, title])
+    const controller = new AbortController();
 
-  const handleLoadMore = () => {
-    const next = page + 1
-    setPage(next)
-    loadMovies(next)
-  }
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("accessToken");
+
+        const res = await axios.get(`${API_BASE}/api/titles/advancedsearch`, {
+          signal: controller.signal,
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          params: {
+            title: title || undefined,
+            minYear: minYear || undefined,
+            maxYear: maxYear || undefined,
+            sort: sort || undefined,
+            genres: genres.length ? genres.join(",") : undefined,
+          },
+        });
+
+        console.log("Movies from backend =>", res.data);
+        // 🔴 ici : ne garder que le tableau
+        setMovies(res.data?.titles || []);
+      } catch (err) {
+        if (err.name !== "CanceledError") {
+          console.error("Error fetching movies:", err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+    return () => controller.abort();
+  }, [title, minYear, maxYear, sort, genres]);
 
   return (
-    <div className="dashboard-page-content">
+    <div className="dashboard-page">
       <Filter
         minYear={minYear}
         setMinYear={setMinYear}
@@ -86,22 +292,13 @@ const HomePage = () => {
         setTitle={setTitle}
       />
 
-      <ul>
-        {Array.isArray(movies) &&
-          movies.map((movie) => (
-            <MovieCard
-              key={movie.id ?? movie.imdbId ?? movie.imdb_id}
-              movie={movie}
-            />
-          ))}
+      {loading && <p style={{ color: "#fff" }}>Loading...</p>}
+
+      <ul className="movies-list">
+        {movies.map((movie) => (
+          <MovieCard key={movie.imdbId} movie={movie} />
+        ))}
       </ul>
-
-      <Button
-        label="Load More.."
-        onClick={handleLoadMore}
-      />
     </div>
-  )
+  );
 }
-
-export default HomePage

@@ -1,26 +1,36 @@
-import './movies.css'
-import SearchBar from '../general/SearchBar'
-import Input from '../general/Input'
-import SelectInput from '../general/SelectInput'
-import Tag from './Tag'
+// src/components/movies/Filter.jsx
+import "./movies.css";
+import Tag from "./Tag";
+
+// adapte les chemins si besoin
+import SearchBar from "../general/SearchBar";
+import SelectInput from "../general/SelectInput";
 
 const ALL_GENRES = [
-  'action',
-  'drama',
-  'comedy',
-  'biography',
-  'romance',
-  'thriller',
-  'war',
-  'history',
-  'sport',
-  'sci-fi',
-  'documentary',
-  'crime',
-  'fantasy',
-]
+  "action",
+  "drama",
+  "comedy",
+  "biography",
+  "romance",
+  "thriller",
+  "war",
+  "history",
+  "sport",
+  "sci-fi",
+  "documentary",
+  "crime",
+  "fantasy",
+];
 
-const Filter = ({
+/**
+ * Props:
+ * - minYear, setMinYear
+ * - maxYear, setMaxYear
+ * - sort, setSort
+ * - genres, setGenres
+ * - title, setTitle
+ */
+export default function Filter({
   minYear,
   setMinYear,
   maxYear,
@@ -31,56 +41,55 @@ const Filter = ({
   setGenres,
   title,
   setTitle,
-}) => {
+}) {
+  const handleMinYearChange = (e) => setMinYear(e.target.value);
+  const handleMaxYearChange = (e) => setMaxYear(e.target.value);
+  const handleSortChange = (e) => setSort(e.target.value);
+
   return (
-    <div className="filter-container">
-      {/* Recherche par titre */}
+    <div className="movies-filter">
+      {/* Search bar */}
       <SearchBar title={title} setTitle={setTitle} />
 
-      {/* Années + tri */}
-      <div className="filter-row">
-        <Input
-          label="Min year"
+      <div className="movies-filter-row">
+        {/* Min year */}
+        <input
           type="number"
+          placeholder="Min year"
           value={minYear}
-          setValue={setMinYear}
-          inputAttributes={{ min: 1900, max: new Date().getFullYear() }}
-        />
-        <Input
-          label="Max year"
-          type="number"
-          value={maxYear}
-          setValue={setMaxYear}
-          inputAttributes={{ min: 1900, max: new Date().getFullYear() }}
+          onChange={handleMinYearChange}
         />
 
-        <SelectInput
-          label="Sort by"
-          value={sort}
-          setValue={setSort}
-          options={[
-            { value: 'latest', label: 'Latest' },
-            { value: 'oldest', label: 'Oldest' },
-            { value: 'highestrated', label: 'Highest rated' },
-            { value: 'lowestrated', label: 'Lowest rated' },
-          ]}
+        {/* Max year */}
+        <input
+          type="number"
+          placeholder="Max year"
+          value={maxYear}
+          onChange={handleMaxYearChange}
         />
+
+        {/* Sort select */}
+        <SelectInput value={sort} onChange={handleSortChange}>
+          <option value="">Sort by</option>
+          <option value="latest">Latest</option>
+          <option value="oldest">Oldest</option>
+          <option value="highestrated">Highest rated</option>
+          <option value="lowestrated">Lowest rated</option>
+        </SelectInput>
       </div>
 
-      {/* Genres */}
-      <ul className="filter-tags">
+      {/* Tags */}
+      <ul className="tag-list">
         {ALL_GENRES.map((g) => (
           <Tag
             key={g}
             genre={g}
-            filter={true}
+            filter
             genres={genres}
             setGenres={setGenres}
           />
         ))}
       </ul>
     </div>
-  )
+  );
 }
-
-export default Filter

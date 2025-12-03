@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import './movies.css'
+// src/components/movies/Tag.jsx
+import { useState } from "react";
+import "./movies.css";
 
-const Tag = ({ genre, filter, genres, setGenres }) => {
-  const [selected, setSelected] = useState(
-    Array.isArray(genres) ? genres.includes(genre) : false
-  )
+/**
+ * Props:
+ * - genre: string
+ * - filter: boolean
+ * - genres: array        // currently selected genres
+ * - setGenres: function  // setter for genres
+ */
+export default function Tag({ genre, filter, genres, setGenres }) {
+  // Local visual state (selected from props)
+  const [selected, setSelected] = useState(genres.includes(genre));
 
   const handleTag = () => {
-    if (!Array.isArray(genres) || !setGenres) return
-
     if (selected) {
-      // retirer le genre
-      setGenres(genres.filter((g) => g !== genre))
-      setSelected(false)
+      // Remove from genres
+      setGenres((prev) => prev.filter((g) => g !== genre));
+      setSelected(false);
     } else {
-      // ajouter le genre
-      setGenres([...genres, genre])
-      setSelected(true)
+      // Add to genres
+      setGenres((prev) => [...prev, genre]);
+      setSelected(true);
     }
-  }
+  };
 
   return (
     <li
-      className={`tag ${filter ? 'tag-filter' : ''} ${
-        selected ? 'tag-selected' : ''
+      className={`tag ${filter ? "tag-filter" : ""} ${
+        selected ? "tag-selected" : ""
       }`}
       onClick={handleTag}
     >
       {genre}
     </li>
-  )
+  );
 }
-
-export default Tag

@@ -1,69 +1,142 @@
-/* src/components/movies/movies.css */
+src/components/movies/movies.css
 
-/* --- Filter & Tags --- */
+/* -------- TAGS -------- */
 
-.filter-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.filter-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.filter-row .general-input {
-  max-width: 120px;
-}
-
-.filter-tags {
+/* --- LISTE DES TAGS (container) --- */
+/* conteneur */
+.tags-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* TAG normal (non sélectionné) */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  color: #e50914;                /* texte rouge */
+  background-color: transparent; /* fond transparent */
+  border: 1px solid #e50914;      /* contour rouge */
+
+  transition: all 0.2s ease;
+}
+
+/* TAG sélectionné */
+.tag-selected {
+  background-color: #e50914;   /* fond rouge */
+  color: #fff;                 /* texte blanc */
+  border-color: #e50914;
+}
+
+/* Optionnel : petit hover */
+.tag:hover {
+  background-color: #e50914;
+  color: white;
+}
+
+
+/*
+.tag-list {
   list-style: none;
   padding: 0;
-  margin: 4px 0 0;
+  margin: 8px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .tag {
   padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid #555;
-  font-size: 0.8rem;
+  border-radius: 14px;
+  font-size: 0.75rem;
   cursor: pointer;
-  color: #ddd;
-}
-
-.tag-filter {
   background-color: #262626;
+  color: #ffffff;
+  border: 1px solid #444;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+} */
+
+/* .tag-filter { */
+  /* style léger spécifique quand utilisé dans le filtre (si besoin) */
+/* } */
+
+/* .tag-selected {
+  background-color: #e50914;
+  border-color: #e50914;
+} */
+
+/* -------- FILTER -------- */
+
+.movies-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background-color: #121212;
+  color: #ffffff;
 }
 
-.tag-selected {
-  background-color: #ff5a5f;
-  border-color: #ff5a5f;
-  color: #fff;
+.movies-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
 }
 
-/* --- Movie card --- */
+.movies-filter-row input[type="number"] {
+  width: 90px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #181818;
+  color: #ffffff;
+}
+
+/* -------- MOVIE CARD -------- */
 
 .movie-card {
   list-style: none;
   background-color: #181818;
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 12px 14px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  position: relative;
 }
 
 .movie-card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.movie-card-icon {
+  cursor: pointer;
+  font-size: 1.1rem;
+  opacity: 0.7;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.movie-card-icon:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.movie-card-icon--active {
+  color: #e50914;
+  opacity: 1;
 }
 
 .movie-title {
@@ -71,39 +144,106 @@
   font-weight: 600;
 }
 
-.movie-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.movie-icon {
-  cursor: pointer;
-  opacity: 0.7;
-}
-
-.movie-icon.active {
-  color: #ff5a5f;
-  opacity: 1;
-}
-
 .movie-synopsis {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #cccccc;
-  margin: 0;
 }
 
 .movie-genres {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.movie-genres li {
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 999px;
+.movie-genre-pill {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 10px;
   background-color: #262626;
+}
+
+.movies-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 20px;
+}
+
+/* card au format “vignette” */
+.movie-card {
+  background-color: #202020;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* image */
+.movie-card-image-wrapper {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+}
+
+.movie-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* icônes favoris / watch later */
+.movie-card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.movie-card-icon {
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.movie-card-icon.active {
+  color: #e50914;
+  opacity: 1;
+}
+
+/* texte */
+.movie-card-body {
+  padding: 8px 10px 12px;
+}
+
+.movie-card-title {
+  font-size: 0.9rem;
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.movie-card-synopsis {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin: 0 0 6px;
+}
+
+/* genres */
+.movie-card-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.movie-card-genre-tag {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 12px;
+  background-color: #b80000;
 }

@@ -1,105 +1,240 @@
-import './navigation.css'
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faHouse,
-  faHeart,
-  faClockRotateLeft,
-  faBell,
-} from '@fortawesome/free-solid-svg-icons'
-import Activity from '../Activity'
+// // src/components/navigation/SideBar.jsx
+// import { useState, useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import axios from 'axios';
 
-const SideBar = () => {
-  const [selected, setSelected] = useState('home')
-  const [small, setSmall] = useState(true)
-  const [activities, setActivities] = useState([])
-  const [showActivities, setShowActivities] = useState(false)
+// import './navigation.css';
+// import Activity from '../Activity';
 
-  const navigate = useNavigate()
+// // icônes depuis assets
+// import homeIcon from '../../assets/Frame1.png';
+// import favoritesIcon from '../../assets/Frame2.png';
+// import historyIcon from '../../assets/Frame3.png';
 
+// function SideBar() {
+//   const [selected, setSelected] = useState('home');          // default: "home"
+//   const [small] = useState(true);                            // default: true (demande du sujet)
+//   const [activities, setActivities] = useState([]);          // default: []
+//   const [showActivities, setShowActivities] = useState(false); // default: false
+
+//   const navigate = useNavigate();
+
+//   // Fonction demandée par le sujet
+//   const setPage = (pageName) => {
+//     setSelected(pageName.toLowerCase());
+
+//     if (pageName === 'Home') {
+//       navigate('/home');
+//     } else if (pageName === 'Favorites') {
+//       navigate('/favorites');
+//     } else if (pageName === 'Watch Later') {
+//       navigate('/watchlater');
+//     }
+//   };
+
+//   useEffect(() => {
+//     axios
+//       .get('http://localhost:8000//api/activity')
+//       .then((res) => {
+//         setActivities(res.data || []);
+//         setShowActivities(true);
+//       })
+//       .catch((err) => {
+//         console.error('Error fetching activities:', err);
+//       });
+//   }, []);
+
+//   return (
+//     <nav className={`sidebar ${small ? 'sidebar-small' : 'sidebar-large'}`}>
+//       {/* Navigation */}
+//       <ul className="sidebar-menu">
+//         <li
+//           className={`sidebar-item ${selected === 'home' ? 'active' : ''}`}
+//           onClick={() => setPage('Home')}
+//         >
+//           <img src={homeIcon} alt="Home" className="sidebar-icon" />
+//           <span className="sidebar-text">Home</span>
+//         </li>
+
+//         <li
+//           className={`sidebar-item ${selected === 'favorites' ? 'active' : ''}`}
+//           onClick={() => setPage('Favorites')}
+//         >
+//           <img src={favoritesIcon} alt="Favorites" className="sidebar-icon" />
+//           <span className="sidebar-text">Favorites</span>
+//         </li>
+
+//         <li
+//           className={`sidebar-item ${selected === 'watch later' ? 'active' : ''}`}
+//           onClick={() => setPage('Watch Later')}
+//         >
+//           <img src={historyIcon} alt="Watch Later" className="sidebar-icon" />
+//           <span className="sidebar-text">Watch Later</span>
+//         </li>
+//       </ul>
+
+//       {/* Latest Activities
+//       {showActivities && Array.isArray(activities) && (
+//         <ul className="sidebar-activities">
+//           {activities.slice(0, 10).map((act, idx) => (
+//             <Activity key={idx} activity={act} />
+//           ))}
+//         </ul>
+//       )} */}
+//       {/* bloc Latest Activities */}
+//       {showActivities && Array.isArray(activities) && (
+//         <div className="sidebar-activities-container">
+//           <h2 className="sidebar-activities-title">Latest Activities</h2>
+//           <ul className="sidebar-activities">
+//             {activities.slice(0, 10).map((act, idx) => (
+//               <Activity key={idx} activity={act} />
+//             ))}
+//           </ul>
+//         </div>
+//       )}
+//     </nav>
+//   );
+// }
+
+// export default SideBar;
+
+// src/components/navigation/SideBar.jsx
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+import './navigation.css';
+import Activity from '../Activity';
+
+// icônes depuis assets
+import homeIcon from '../../assets/Frame1.png';
+import favoritesIcon from '../../assets/Frame2.png';
+import historyIcon from '../../assets/Frame3.png';
+
+function SideBar() {
+  const [selected, setSelected] = useState('home');          // default: "home"
+  const [small] = useState(true);                            // default: true (demande du sujet)
+  const [activities, setActivities] = useState([]);          // default: []
+  const [showActivities, setShowActivities] = useState(false); // default: false
+
+  const navigate = useNavigate();
+
+  // Fonction demandée par le sujet
   const setPage = (pageName) => {
-    setSelected(pageName.toLowerCase())
+    setSelected(pageName.toLowerCase());
 
-    switch (pageName) {
-      case 'home':
-        navigate('/home')
-        break
-      case 'favorites':
-        navigate('/favorites')
-        break
-      case 'watchlater':
-        navigate('/watchlater')
-        break
-      default:
-        break
+    if (pageName === 'Home') {
+      navigate('/home');
+    } else if (pageName === 'Favorites') {
+      navigate('/favorites');
+    } else if (pageName === 'Watch Later') {
+      navigate('/watchlater');
     }
-  }
+  };
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8000/api/activity')
-      .then((response) => {
-        setActivities(response.data || [])
-      })
-      .catch((error) => {
-        console.error('Failed to fetch activities:', error)
-      })
-  }, [])
+    const fetchActivities = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+
+        const res = await axios.get('http://localhost:8000/api/activity', {
+          headers: token
+            ? { Authorization: `Bearer ${token}` }
+            : undefined,
+        });
+
+        console.log('GET /api/activity =>', res.data);
+
+        let data = res.data;
+
+        // au cas où le backend renvoie { activities: [...] }
+        if (!Array.isArray(data) && Array.isArray(data.activities)) {
+          data = data.activities;
+        }
+
+        // 👉 TRI PAR DATE (plus récent en premier)
+        const sorted = [...(data || [])].sort((a, b) => {
+          const dateA = new Date(a.createdAt || a.date || a.updatedAt);
+          const dateB = new Date(b.createdAt || b.date || b.updatedAt);
+          return dateB - dateA; // décroissant
+        });
+        setActivities(sorted);
+
+        // setActivities(data || []);
+        setShowActivities(true);
+      } catch (err) {
+        console.error('Error fetching activities:', err);
+        setActivities([]);
+        setShowActivities(true); // on affiche quand même le bloc, même vide
+      }
+    };
+
+    fetchActivities();
+  }, []);
 
   return (
-    <nav className={`sidebar ${small ? 'sidebar-small' : ''}`}>
-      {/* Navigation principale */}
-      <ul className="sidebar-nav">
+    <nav className={`sidebar ${small ? 'sidebar-small' : 'sidebar-large'}`}>
+      {/* Navigation */}
+      <ul className="sidebar-menu">
         <li
-          className={selected === 'home' ? 'active' : ''}
-          onClick={() => setPage('home')}
+          className={`sidebar-item ${selected === 'home' ? 'active' : ''}`}
+          onClick={() => setPage('Home')}
         >
-          <FontAwesomeIcon icon={faHouse} />
-          <span>Home</span>
+          <img src={homeIcon} alt="Home" className="sidebar-icon" />
+          <span className="sidebar-text">Home</span>
         </li>
 
         <li
-          className={selected === 'favorites' ? 'active' : ''}
-          onClick={() => setPage('favorites')}
+          className={`sidebar-item ${selected === 'favorites' ? 'active' : ''}`}
+          onClick={() => setPage('Favorites')}
         >
-          <FontAwesomeIcon icon={faHeart} />
-          <span>Favorites</span>
+          <img src={favoritesIcon} alt="Favorites" className="sidebar-icon" />
+          <span className="sidebar-text">Favorites</span>
         </li>
 
         <li
-          className={selected === 'watchlater' ? 'active' : ''}
-          onClick={() => setPage('watchlater')}
+          className={`sidebar-item ${selected === 'watch later' ? 'active' : ''}`}
+          onClick={() => setPage('Watch Later')}
         >
-          <FontAwesomeIcon icon={faClockRotateLeft} />
-          <span>Watch Later</span>
+          <img src={historyIcon} alt="Watch Later" className="sidebar-icon" />
+          <span className="sidebar-text">Watch Later</span>
         </li>
       </ul>
 
-      {/* Activités récentes */}
-      <div className="sidebar-activities-section">
-        <div
-          className="sidebar-activities-header"
-          onClick={() => setShowActivities((prev) => !prev)}
-        >
-          <FontAwesomeIcon icon={faBell} />
-          <span>Recent activity</span>
-        </div>
+      {/* bloc Latest Activities */}
+      {showActivities && (
+        <div className="sidebar-activities-container">
+          <h2 className="sidebar-activities-title">Latest Activities</h2>
 
-        {showActivities && (
-          <ul className="sidebar-activities">
-            {activities.slice(0, 10).map((activity, index) => (
-              <Activity
-                key={activity.id ?? index}
-                activity={activity}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
+          {activities.length === 0 ? (
+            <p className="activity-empty">No activity yet</p>
+          ) : (
+            <ul className="sidebar-activities">
+              {activities.slice(0, 10).map((act) => (
+                <Activity key={act.id || `${act.userId}-${act.titleId}-${act.createdAt}`} activity={act} />
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      {/* {showActivities && (
+        <div className="sidebar-activities-container">
+          <h2 className="sidebar-activities-title">Latest Activities</h2>
+
+          {activities.length === 0 ? (
+            <p className="activity-empty">No activity yet</p>
+          ) : (
+            <ul className="sidebar-activities">
+              {activities.slice(0, 10).map((act, idx) => (
+                <Activity key={idx} activity={act} />
+              ))}
+            </ul>
+          )}
+        </div>
+      )} */}
     </nav>
-  )
+  );
 }
 
-export default SideBar
+export default SideBar;
